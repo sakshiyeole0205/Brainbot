@@ -1,0 +1,365 @@
+<!-- Keep this entire updated HTML -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BrainBot - C Programming Assistant</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #2c3e50, #3498db);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 600px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      background: #2980b9;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .header h1 {
+      font-size: 26px;
+    }
+
+    .login-btn {
+      background: white;
+      color: #2980b9;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .login-btn:hover {
+      background: #ecf0f1;
+    }
+
+    .suggestions, .auto-suggest, .recent-questions {
+      padding: 10px 15px;
+      background: #ecf0f1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .suggestion-btn, .recent-btn {
+      padding: 8px 12px;
+      border: none;
+      background: #3498db;
+      color: white;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .suggestion-btn:hover, .recent-btn:hover {
+      background: #2c3e91;
+    }
+
+    .chat-messages {
+      padding: 15px;
+      height: 350px;
+      overflow-y: auto;
+      background: #f7f9fa;
+      flex: 1;
+    }
+
+    .message {
+      margin: 10px 0;
+      max-width: 80%;
+      padding: 12px 15px;
+      border-radius: 20px;
+      line-height: 1.4;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .user-message {
+      background: #3498db;
+      color: white;
+      margin-left: auto;
+      border-bottom-right-radius: 5px;
+    }
+
+    .bot-message {
+      background: #ecf0f1;
+      color: #2c3e50;
+      margin-right: auto;
+      border-bottom-left-radius: 5px;
+    }
+
+    .code-example {
+      background: #2d2d2d;
+      color: #f1f1f1;
+      padding: 10px;
+      font-family: monospace;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      margin-top: 10px;
+    }
+
+    .input-container {
+      padding: 15px;
+      background: white;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    #user-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      border-radius: 25px;
+      border: none;
+      background: #2980b9;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #1c5982;
+    }
+
+    .typing-indicator {
+      display: flex;
+      gap: 5px;
+      padding: 10px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: #3498db;
+      border-radius: 50%;
+      animation: typing 1s infinite;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes typing {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .clear-chat {
+      background: #e74c3c;
+      margin-left: auto;
+    }
+
+    .clear-chat:hover {
+      background: #c0392b;
+    }
+
+    @media (max-width: 480px) {
+      .chat-messages {
+        height: 300px;
+      }
+
+      .header h1 {
+        font-size: 20px;
+      }
+
+      #user-input {
+        font-size: 14px;
+      }
+    }
+
+    .section-title {
+      font-weight: bold;
+      color: #2c3e50;
+      padding: 5px 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="header">
+      <h1>🤖 BrainBot</h1>
+      <button class="login-btn">Login</button>
+    </div>
+
+    <div class="suggestions">
+      <button class="suggestion-btn" onclick="askQuestion('What is C programming?')">What is C?</button>
+      <button class="suggestion-btn" onclick="askQuestion('Explain pointers')">Pointers</button>
+      <button class="suggestion-btn" onclick="askQuestion('What is malloc?')">malloc</button>
+      <button class="suggestion-btn" onclick="askQuestion('What is a struct?')">Struct</button>
+    </div>
+
+    <div class="section-title">Recently Asked:</div>
+    <div class="recent-questions" id="recent-questions"></div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div class="message bot-message">
+        Hi there! 👋 I'm BrainBot. Ask me anything about C programming. I can explain:
+        <ul>
+          <li>Syntax and concepts</li>
+          <li>Pointers & memory</li>
+          <li>Loops, functions, arrays</li>
+          <li>File handling</li>
+          <li>Dynamic memory</li>
+        </ul>
+        Start typing below or use the suggestions above!
+      </div>
+    </div>
+
+    <div class="input-container">
+      <input type="text" id="user-input" placeholder="Ask a C programming question..." oninput="showSuggestions(this.value)">
+      <button onclick="sendMessage()">Send</button>
+      <button class="clear-chat" onclick="clearChat()">Clear Chat</button>
+    </div>
+  </div>
+
+  <script>
+    const cKnowledgeBase = {
+      "what is c programming": "C is a powerful general-purpose programming language created in the 1970s. It’s known for its speed and efficiency, commonly used in system programming and embedded systems.",
+      "pointers": "Pointers are variables that store the address of another variable.\n\nExample:\nint a = 10;\nint *ptr = &a;\nprintf(\"%d\", *ptr); // prints 10",
+      "malloc": "malloc() allocates memory dynamically during runtime.\n\nExample:\nint *arr = malloc(5 * sizeof(int));\nif (arr == NULL) printf(\"Memory error\");\nfree(arr);",
+      "struct": "A struct is a custom data type that groups variables.\n\nExample:\nstruct Student {\n  char name[50];\n  int age;\n};",
+      "function": "Functions are reusable blocks of code.\n\nExample:\nint add(int a, int b) { return a + b; }",
+      "loop": "Loops let you run code multiple times:\n- for loop\n- while loop\n- do-while loop",
+      "array": "An array holds multiple values of the same type.\n\nint nums[3] = {1, 2, 3};",
+      "scanf": "scanf() reads user input.\n\nExample:\nint age;\nscanf(\"%d\", &age);"
+    };
+
+    let recentQuestions = [];
+
+    function askQuestion(question) {
+      document.getElementById("user-input").value = question;
+      sendMessage();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim().toLowerCase();
+      if (!message) return;
+
+      addMessage(input.value, 'user');
+      addToRecentQuestions(input.value);
+      input.value = '';
+
+      const typing = document.createElement('div');
+      typing.className = 'message bot-message typing-indicator';
+      typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+      document.getElementById('chat-messages').appendChild(typing);
+      scrollToBottom();
+
+      setTimeout(() => {
+        typing.remove();
+        let reply = "Sorry, I don't understand. Try asking something about C programming.";
+        for (const key in cKnowledgeBase) {
+          if (message.includes(key)) {
+            reply = cKnowledgeBase[key];
+            break;
+          }
+        }
+        addMessage(reply, 'bot');
+      }, 1000);
+    }
+
+    function addMessage(text, sender) {
+      const chatBox = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = `message ${sender}-message`;
+
+      if (text.includes("Example:") || text.includes("\n")) {
+        const [main, code] = text.split(/Example:|\n(?=int|struct|printf|scanf)/);
+        div.innerHTML = main + (code ? `<div class="code-example">${code.trim()}</div>` : '');
+      } else {
+        div.textContent = text;
+      }
+
+      chatBox.appendChild(div);
+      scrollToBottom();
+    }
+
+    function addToRecentQuestions(question) {
+      if (recentQuestions.includes(question)) return;
+      if (recentQuestions.length >= 5) recentQuestions.shift();
+      recentQuestions.push(question);
+      updateRecentDisplay();
+    }
+
+    function updateRecentDisplay() {
+      const container = document.getElementById('recent-questions');
+      container.innerHTML = '';
+      recentQuestions.slice().reverse().forEach(q => {
+        const btn = document.createElement('button');
+        btn.className = 'recent-btn';
+        btn.textContent = q;
+        btn.onclick = () => askQuestion(q);
+        container.appendChild(btn);
+      });
+    }
+
+    function clearChat() {
+      document.getElementById('chat-messages').innerHTML = '';
+      addMessage("Chat cleared. Start asking new questions!", 'bot');
+      recentQuestions = [];
+      updateRecentDisplay();
+    }
+
+    function scrollToBottom() {
+      const chatBox = document.getElementById("chat-messages");
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function showSuggestions(value) {
+      if (value.length >= 3) {
+        const lower = value.toLowerCase();
+        const match = Object.keys(cKnowledgeBase).find(k => lower.includes(k));
+        if (match) {
+          addMessage(`Suggested: "${match.charAt(0).toUpperCase() + match.slice(1)}"`, 'bot');
+        }
+      }
+    }
+
+    document.getElementById('user-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') sendMessage();
+    });
+  </script>
+</body>
+</html>
