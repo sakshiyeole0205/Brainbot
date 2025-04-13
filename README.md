@@ -77,7 +77,6 @@ brainbot/
 ## 🧠 Vision
 
 This assistant was created to simplify coding education, especially in the foundational language of C. BrainBot makes learning interactive, accessible, and enjoyable.
-![image](https://github.com/user-attachments/assets/64dab24d-d8d2-4b69-9907-513fcfe27df6)
 
 ---
 
