@@ -27,7 +27,7 @@ This project is a combination of web technologies and AI capabilities to deliver
 - 💡 Smart suggestions to guide further exploration  
 - 🎨 Stylish and responsive UI (mobile-friendly)  
 - ⚙️ Powered by LLM (like OpenAI API or similar)
-
+🌐 Powered by **Gemini API** – API Key: `AIzaSyAcE_IWZoe1q72zeLnm3_u8ydl3DG2qnOo` 
 ---
 
 ## 🔧 Technologies Used
